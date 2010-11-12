@@ -1,0 +1,7 @@
+jsoncompare is a simple Python utility for comparing two JSON objects
+
+USAGE
+
+python jsoncompare.py <item1> <item2>
+
+Where item1 and item2 are either a file or a url containing a JSON object.
