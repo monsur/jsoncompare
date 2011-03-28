@@ -98,6 +98,8 @@ def compare(location1, location2):
   json2 = getContent(location2)
   diff1 = Diff(json1, json2, True).difference
   diff2 = Diff(json2, json1, False).difference
+  if len(diff1) > 0 or len(diff2) > 0:
+    print '\r\nFound differences comparing ' + location1 + ' and ' + location2
   for type, message in diff1:
     if type == 'PATH':
       print 'REMOVED: ' + message
