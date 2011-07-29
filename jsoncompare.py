@@ -98,17 +98,24 @@ def compare(location1, location2):
   json2 = getContent(location2)
   diff1 = Diff(json1, json2, True).difference
   diff2 = Diff(json2, json1, False).difference
-  if len(diff1) > 0 or len(diff2) > 0:
-    print '\r\nFound differences comparing ' + location1 + ' and ' + location2
+  diffs = []
   for type, message in diff1:
-    if type == 'PATH':
-      print 'REMOVED: ' + message
-    else:
-      print 'CHANGED: ' + message
+    newType = 'CHANGED'
+    if type == PATH:
+      newType = 'REMOVED'
+    diffs.append({'type': newType, 'message': message})
   for type, message in diff2:
-    print 'ADDED: ' + message
+    diffs.append({'type': 'ADDED', 'message': message})
+  return diffs
 
 if __name__ == '__main__':
   if len(sys.argv) != 3:
     sys.exit('Error')
-  compare(sys.argv[1], sys.argv[2])
+  location1 = sys.argv[1]
+  location2 = sys.argv[2]
+  diffs = compare(location1, location2)
+  if len(diffs) > 0:
+    print '\r\nFound differences comparing ' + location1 + ' and ' + location2
+  for diff in diffs:
+    print diff['type'] + ': ' + diff['message'] 
+
