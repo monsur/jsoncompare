@@ -1,6 +1,7 @@
 import httplib2
 import json
 import sys
+import types
 
 TYPE = 'TYPE'
 PATH = 'PATH'
@@ -14,7 +15,7 @@ class Diff(object):
     self.seen = []
     not_with_values = not with_values
     self.check(first, second, with_values=with_values)
-    
+
   def check(self, first, second, path='', with_values=False):
     if with_values and second != None:
       if not isinstance(first, type(second)):
@@ -44,9 +45,9 @@ class Diff(object):
             self.check(first[key], sec, path=new_path, with_values=with_values)
         else:
           # second is not dict. every key from first goes to the difference
-          self.save_diff(new_path, PATH)        
+          self.save_diff(new_path, PATH)
           self.check(first[key], second, path=new_path, with_values=with_values)
-        
+
     # if object is list, loop over it and check.
     elif isinstance(first, list):
       for (index, item) in enumerate(first):
@@ -68,8 +69,8 @@ class Diff(object):
       if with_values and second != None:
         if first != second:
           self.save_diff('%s - %s | %s' % (path, first, second), VALUE)
-      return 
-      
+      return
+
   def save_diff(self, diff_message, type_):
     if diff_message not in self.difference:
       self.seen.append(diff_message)
@@ -79,12 +80,14 @@ def getContentFromUri(uri):
   h = httplib2.Http()
   resp, content = h.request(uri, "GET")
   return content
-  
+
 def getContentFromFile(filePath):
   return open(filePath, 'r').read()
 
 def getContent(location):
   content = None
+  if type(location) is types.DictType:
+    return location
   if location.startswith("http"):
     content = getContentFromUri(location)
   else:
@@ -117,5 +120,4 @@ if __name__ == '__main__':
   if len(diffs) > 0:
     print '\r\nFound differences comparing ' + location1 + ' and ' + location2
   for diff in diffs:
-    print diff['type'] + ': ' + diff['message'] 
-
+    print diff['type'] + ': ' + diff['message']
